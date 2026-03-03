@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Success Team Feedback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg-deep: #141420;
+      --bg-card: #1e1e2a;
+      --bg-input: #161620;
+      --border: #2a2a3a;
+      --border-hover: #3a3a4a;
+      --text-primary: #E8E8F0;
+      --text-secondary: #9a9ab0;
+      --text-muted: #7a7a90;
+      --text-dim: #6a6a80;
+      --accent-blue: #7B93DB;
+      --accent-blue-dark: #5A6FB5;
+      --accent-gold: #E8A838;
+      --accent-gold-bg: rgba(232,168,56,0.12);
+      --error: #D9534F;
+      --error-glow: rgba(217,83,79,0.1);
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .name-field { margin-bottom: 32px; }
+
+    .name-field label, .csm-card label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .name-field input {
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .name-field input:focus { border-color: var(--accent-blue); }
+    .name-field input.error { border-color: var(--error); }
+
+    .instructions {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .required { color: var(--error); }
+
+    .csm-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--border);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .csm-card.error {
+      border-color: var(--error);
+      box-shadow: 0 0 16px var(--error-glow);
+    }
+
+    .csm-card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .csm-card-header h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .rating-badge {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+
+    .rating-badge.numeric {
+      color: var(--accent-gold);
+      background: var(--accent-gold-bg);
+    }
+
+    .rating-badge.na {
+      color: #8a8a9a;
+      background: var(--border);
+    }
+
+    .csm-card label {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .stars-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 28px;
+      color: var(--border-hover);
+      transition: color 0.15s, transform 0.15s;
+      padding: 2px;
+      line-height: 1;
+    }
+
+    .star-btn.filled {
+      color: var(--accent-gold);
+      transform: scale(1.15);
+    }
+
+    .na-btn {
+      margin-left: 8px;
+      padding: 4px 14px;
+      border-radius: 6px;
+      border: 2px solid var(--border-hover);
+      background: transparent;
+      color: #8a8a9a;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    .na-btn.active {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .comment-section {
+      margin-top: 18px;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-section textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    }
+
+    .comment-section textarea:focus { border-color: var(--accent-blue); }
+    .comment-section textarea.error { border-color: var(--error); }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .submit-wrap { text-align: center; margin-top: 36px; padding-bottom: 20px; }
+
+    .submit-btn {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 14px 56px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(123,147,219,0.25);
+    }
+
+    .submit-btn:disabled {
+      background: #4a4a6a;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .success-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .success-screen .check { font-size: 56px; margin-bottom: 20px; }
+
+    .success-screen h2 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ============ SURVEY SCREEN ============ -->
+<div id="survey-screen">
+  <div class="container">
+    <div class="header">
+      <h1>Customer Success Team Feedback</h1>
+      <p>Sales team evaluation of CSM partnerships</p>
+    </div>
+
+    <div class="name-field">
+      <label>Your full name <span class="required">*</span></label>
+      <input type="text" id="respondent-name" placeholder="e.g. Jane Smith">
+      <p class="error-msg hidden" id="name-error">Please enter your name</p>
+    </div>
+
+    <p class="instructions">
+      For each CSM below, rate your experience working with them on a scale of 1–5, or select N/A if you haven't
+      worked with them enough to evaluate. If you provide a numeric rating, please explain your rating with details
+      and examples.
+    </p>
+
+    <div id="csm-cards"></div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Submit Feedback</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUCCESS SCREEN ============ -->
+<div id="success-screen" class="success-screen hidden">
+  <div>
+    <div class="check">✓</div>
+    <h2>Thank you!</h2>
+    <p>Your feedback has been submitted successfully.</p>
+  </div>
+</div>
+
+<script>
+  // =====================================================
+  // CONFIGURATION — UPDATE THIS URL AFTER DEPLOYING YOUR APPS SCRIPT
+  // =====================================================
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCm-o_V0byefZwqfERcuJMaYRwceusx39EkTEhcbejfoISc--m2w6yScuCGyOSbBs9/exec";
+  // =====================================================
+
+  const CSM_NAMES = [
+    "Mitch Bischoff",
+    "Kevin Costello",
+    "Helene Martin",
+    "Ben Reis",
+    "Benito Velazquez",
+    "Ian Vinet",
+    "Dana Krause",
+    "Claire Abdo",
+    "Bryan Faulstich",
+    "Brayden Ray",
+    "Jessie Thomas"
+  ];
+
+  // State
+  const ratings = {};
+  const comments = {};
+  const errors = {};
+
+  // Build CSM cards
+  function buildCards() {
+    const container = document.getElementById("csm-cards");
+    CSM_NAMES.forEach((name, i) => {
+      const firstName = name.split(" ")[0];
+      const card = document.createElement("div");
+      card.className = "csm-card";
+      card.id = `card-${i}`;
+      card.innerHTML = `
+        <div class="csm-card-header">
+          <h3>${name}</h3>
+          <span class="rating-badge hidden" id="badge-${i}"></span>
+        </div>
+        <label>Rate your experience working with ${firstName} <span class="required">*</span></label>
+        <div class="stars-row">
+          ${[1,2,3,4,5].map(s => `
+            <button class="star-btn" id="star-${i}-${s}" onclick="setRating(${i}, '${s}')"
+              onmouseenter="hoverStars(${i}, ${s})" onmouseleave="unhoverStars(${i})"
+              aria-label="Rate ${name} ${s} out of 5">☆</button>
+          `).join("")}
+          <button class="na-btn" id="na-${i}" onclick="setRating(${i}, 'N/A')">N/A</button>
+        </div>
+        <p class="error-msg hidden" id="rating-error-${i}">Please select a rating or N/A</p>
+        <div class="comment-section hidden" id="comment-section-${i}">
+          <label>Please explain your rating — include details and examples <span class="required">*</span></label>
+          <textarea id="comment-${i}" rows="3" placeholder="What has your experience been like working with ${firstName}?"
+            oninput="handleComment(${i})"></textarea>
+          <p class="error-msg hidden" id="comment-error-${i}">Please provide details about your rating</p>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function setRating(index, value) {
+    ratings[index] = value;
+    errors[index] = false;
+    updateCard(index);
+  }
+
+  function handleComment(index) {
+    comments[index] = document.getElementById(`comment-${index}`).value;
+    errors[index] = false;
+    document.getElementById(`comment-error-${index}`).classList.add("hidden");
+    document.getElementById(`comment-${index}`).classList.remove("error");
+  }
+
+  function updateCard(index) {
+    const rating = ratings[index];
+    const card = document.getElementById(`card-${index}`);
+    const badge = document.getElementById(`badge-${index}`);
+    const commentSection = document.getElementById(`comment-section-${index}`);
+    const naBtn = document.getElementById(`na-${index}`);
+    const ratingError = document.getElementById(`rating-error-${index}`);
+
+    // Clear error state
+    card.classList.remove("error");
+    ratingError.classList.add("hidden");
+
+    // Update stars
+    for (let s = 1; s <= 5; s++) {
+      const star = document.getElementById(`star-${index}-${s}`);
+      if (rating && rating !== "N/A" && s <= Number(rating)) {
+        star.textContent = "★";
+        star.classList.add("filled");
+      } else {
+        star.textContent = "☆";
+        star.classList.remove("filled");
+      }
+    }
+
+    // Update N/A button
+    if (rating === "N/A") {
+      naBtn.classList.add("active");
+    } else {
+      naBtn.classList.remove("active");
+    }
+
+    // Update badge
+    if (rating) {
+      badge.classList.remove("hidden");
+      if (rating === "N/A") {
+        badge.textContent = "N/A";
+        badge.className = "rating-badge na";
+      } else {
+        badge.textContent = `${rating}/5`;
+        badge.className = "rating-badge numeric";
+      }
+    } else {
+      badge.classList.add("hidden");
+    }
+
+    // Show/hide comment section
+    if (rating && rating !== "N/A") {
+      commentSection.classList.remove("hidden");
+    } else {
+      commentSection.classList.add("hidden");
+      comments[index] = "";
+    }
+  }
+
+  function hoverStars(index, hoverStar) {
+    if (ratings[index] === "N/A") return;
+    for (let s = 1; s <= 5; s++) {
+      const star = document.getElementById(`star-${index}-${s}`);
+      if (s <= hoverStar) {
+        star.textContent = "★";
+        star.classList.add("filled");
+      } else {
+        star.textContent = "☆";
+        star.classList.remove("filled");
+      }
+    }
+  }
+
+  function unhoverStars(index) {
+    const rating = ratings[index];
+    for (let s = 1; s <= 5; s++) {
+      const star = document.getElementById(`star-${index}-${s}`);
+      if (rating && rating !== "N/A" && s <= Number(rating)) {
+        star.textContent = "★";
+        star.classList.add("filled");
+      } else {
+        star.textContent = "☆";
+        star.classList.remove("filled");
+      }
+    }
+  }
+
+  function validate() {
+    let valid = true;
+    const nameInput = document.getElementById("respondent-name");
+    const nameError = document.getElementById("name-error");
+
+    if (!nameInput.value.trim()) {
+      nameInput.classList.add("error");
+      nameError.classList.remove("hidden");
+      valid = false;
+    } else {
+      nameInput.classList.remove("error");
+      nameError.classList.add("hidden");
+    }
+
+    CSM_NAMES.forEach((_, i) => {
+      const r = ratings[i];
+      const card = document.getElementById(`card-${i}`);
+      const ratingError = document.getElementById(`rating-error-${i}`);
+      const commentError = document.getElementById(`comment-error-${i}`);
+      const commentTextarea = document.getElementById(`comment-${i}`);
+
+      if (!r) {
+        card.classList.add("error");
+        ratingError.classList.remove("hidden");
+        valid = false;
+      } else if (r !== "N/A" && !(comments[i] || "").trim()) {
+        card.classList.add("error");
+        commentError.classList.remove("hidden");
+        if (commentTextarea) commentTextarea.classList.add("error");
+        valid = false;
+      } else {
+        card.classList.remove("error");
+        ratingError.classList.add("hidden");
+        commentError.classList.add("hidden");
+        if (commentTextarea) commentTextarea.classList.remove("error");
+      }
+    });
+
+    return valid;
+  }
+
+  async function handleSubmit() {
+    if (!validate()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Submitting…";
+
+    const payload = {
+      respondent: document.getElementById("respondent-name").value.trim(),
+      timestamp: new Date().toISOString(),
+      feedback: CSM_NAMES.map((csm, i) => ({
+        csm,
+        rating: ratings[i],
+        comment: ratings[i] === "N/A" ? "" : (comments[i] || "").trim()
+      }))
+    };
+
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      // no-cors means we can't read the response, but if it didn't throw, it likely worked
+      document.getElementById("survey-screen").classList.add("hidden");
+      document.getElementById("success-screen").classList.remove("hidden");
+    } catch (err) {
+      console.error("Submit error:", err);
+      alert("There was an error submitting your response. Please try again.");
+      btn.disabled = false;
+      btn.textContent = "Submit Feedback";
+    }
+  }
+
+  // Initialize
+  document.addEventListener("DOMContentLoaded", buildCards);
+
+  // Remove error styling on name input focus
+  document.addEventListener("DOMContentLoaded", () => {
+    const nameInput = document.getElementById("respondent-name");
+    nameInput.addEventListener("focus", () => {
+      nameInput.classList.remove("error");
+      document.getElementById("name-error").classList.add("hidden");
+    });
+  });
+</script>
+
+</body>
+</html>
